@@ -2,6 +2,7 @@ package BurntingClub.Burnting.service;
 
 import BurntingClub.Burnting.dto.MemberDTO.MemberDTO;
 import BurntingClub.Burnting.entity.MemberEntity;
+import BurntingClub.Burnting.repository.MemberRatingRepository;
 import BurntingClub.Burnting.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import static BurntingClub.Burnting.entity.MemberEntity.toMemberEntity;
 @RequiredArgsConstructor
 public class MemberService{
     public final MemberRepository memberRepository;
+    public final MemberRatingRepository memberRatingRepository;
 
     public String insertMember(MemberDTO memberDTO) {
         MemberEntity memberEntity = toMemberEntity(memberDTO);
@@ -30,6 +32,7 @@ public class MemberService{
         return "User \"" + memberDTO.getUid() + "\" Update OK";
     }
     public String deleteMember(String uid) {
+        memberRatingRepository.deleteByMemberEntity_Uid(uid);
         memberRepository.deleteByUid(uid);
         return "User \"" + uid + "\" Delete OK";
     }

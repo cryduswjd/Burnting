@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
     Optional<MemberEntity> findByUid(String uid);
+    @Transactional
     Optional<MemberEntity> deleteByUid(String uid);
     @Modifying(clearAutomatically = true)
     @Transactional
