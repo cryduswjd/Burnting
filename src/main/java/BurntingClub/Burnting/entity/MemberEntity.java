@@ -3,6 +3,7 @@ package BurntingClub.Burnting.entity;
 import BurntingClub.Burnting.dto.MemberDTO.MemberDTO;
 import jakarta.persistence.*;
 import lombok.*;
+
 @Getter
 @Setter
 @Entity
@@ -29,6 +30,10 @@ public class MemberEntity {
     private String major;
     @Column
     private String infotext;
+    @Column
+    private Long sex;
+    @Column
+    private String imgs;
 
     public static MemberEntity toMemberEntity(MemberDTO memberDTO) {
         MemberEntity memberEntity = new MemberEntity();
@@ -41,6 +46,8 @@ public class MemberEntity {
         memberEntity.setUniversity(memberDTO.getUniversity());
         memberEntity.setMajor(memberDTO.getMajor());
         memberEntity.setInfotext(memberDTO.getInfotext());
+        memberEntity.setSex(memberDTO.getSex());
+        memberEntity.setImgs(memberDTO.getImgs());
         return memberEntity;
     }
 }

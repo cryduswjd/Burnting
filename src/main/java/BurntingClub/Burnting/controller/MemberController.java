@@ -14,6 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
@@ -61,5 +64,19 @@ public class MemberController {
     @PostMapping("/deleteMember")
     public String deleteMember(@RequestParam String uid) {
         return memberService.deleteMember(uid);
+    }
+    @PostMapping("/insertFeedImgs")
+    public String insertFeedImgs(@RequestParam String uid, @RequestBody Map<String, Object> images) {
+        List<String> imageUrl = (List<String>) images.get("images");
+        return memberService.insertFeedImgs(uid, imageUrl);
+    }
+    @PostMapping("/deleteFeedImgs")
+    public String deleteFeedImgs(@RequestParam String uid, @RequestBody Map<String, Object> images) {
+        List<String> imageUrl = (List<String>) images.get("images");
+        return memberService.deleteFeedImgs(uid, imageUrl);
+    }
+    @GetMapping("/getFeedImgs")
+    public List<String> getFeedImgs(@RequestParam String uid) {
+        return memberService.getFeedImgs(uid);
     }
 }

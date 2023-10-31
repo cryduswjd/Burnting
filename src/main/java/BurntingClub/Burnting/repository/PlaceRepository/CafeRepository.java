@@ -1,0 +1,9 @@
+package BurntingClub.Burnting.repository.PlaceRepository;
+
+import BurntingClub.Burnting.entity.PlaceEntity.CafeEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
+
+
+public interface CafeRepository extends JpaRepository<CafeEntity, Long> {
+}
