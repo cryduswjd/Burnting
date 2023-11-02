@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ImagesRepository extends JpaRepository<ImagesEntity, Long> {
-    List<ImagesEntity> findByUid(String uid);
+    List<ImagesEntity> findByUidOrderByNumDesc(String uid);
     @Transactional
     @Modifying
     @Query(value = "delete from ImagesEntity i where i.imageUrl = :image")

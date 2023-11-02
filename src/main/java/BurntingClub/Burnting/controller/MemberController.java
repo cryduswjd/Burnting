@@ -76,7 +76,7 @@ public class MemberController {
         return memberService.deleteFeedImgs(uid, imageUrl);
     }
     @GetMapping("/getFeedImgs")
-    public List<String> getFeedImgs(@RequestParam String uid) {
+    public String getFeedImgs(@RequestParam String uid) {
         return memberService.getFeedImgs(uid);
     }
 }

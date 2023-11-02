@@ -32,8 +32,6 @@ public class MemberEntity {
     private String infotext;
     @Column
     private Long sex;
-    @Column
-    private String imgs;
 
     public static MemberEntity toMemberEntity(MemberDTO memberDTO) {
         MemberEntity memberEntity = new MemberEntity();
@@ -47,7 +45,6 @@ public class MemberEntity {
         memberEntity.setMajor(memberDTO.getMajor());
         memberEntity.setInfotext(memberDTO.getInfotext());
         memberEntity.setSex(memberDTO.getSex());
-        memberEntity.setImgs(memberDTO.getImgs());
         return memberEntity;
     }
 }

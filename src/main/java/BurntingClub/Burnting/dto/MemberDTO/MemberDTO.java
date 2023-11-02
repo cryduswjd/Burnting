@@ -19,7 +19,6 @@ public class MemberDTO {
     private String major;
     private String infotext;
     private Long sex;
-    private String imgs;
 
     public static MemberDTO toMemberDTO(MemberEntity memberEntity) {
         MemberDTO memberDTO = new MemberDTO();
@@ -33,7 +32,6 @@ public class MemberDTO {
         memberDTO.setMajor(memberEntity.getMajor());
         memberDTO.setInfotext(memberEntity.getInfotext());
         memberDTO.setSex(memberEntity.getSex());
-        memberDTO.setImgs(memberEntity.getImgs());
         return memberDTO;
     }
 }

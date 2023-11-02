@@ -1,6 +1,5 @@
 package BurntingClub.Burnting.service;
 
-import BurntingClub.Burnting.dto.MemberDTO.ImagesDTO;
 import BurntingClub.Burnting.dto.MemberDTO.MemberDTO;
 import BurntingClub.Burnting.entity.ImagesEntity;
 import BurntingClub.Burnting.entity.MemberEntity;
@@ -60,11 +59,16 @@ public class MemberService{
         }
         return "User \"" + uid + "\" Feed Images \"" + images + "\" delete Successfully";
     }
-    public List<String> getFeedImgs(String uid) {
-        List<ImagesEntity> imagesEntities = imagesRepository.findByUid(uid);
+    public String getFeedImgs(String uid) {
+        List<ImagesEntity> imagesEntities = imagesRepository.findByUidOrderByNumDesc(uid);
         List<String> imageUrls = imagesEntities.stream()
-                .map(ImagesEntity::getImageUrl)
+                .map(imagesEntity -> imagesEntity.getImageUrl())
                 .collect(Collectors.toList());
-        return imageUrls;
+        String jsonArray = imageUrls.stream()
+                .map(url -> "\"" + url + "\"")
+                .collect(Collectors.joining(", ", "[", "]"));
+        String jsonString = "{\"images\":" + jsonArray + "}";
+
+        return jsonString;
     }
 }
