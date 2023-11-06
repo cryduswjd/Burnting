@@ -1,6 +1,5 @@
 package BurntingClub.Burnting.controller;
 
-import BurntingClub.Burnting.dto.TeamDTO;
 import BurntingClub.Burnting.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

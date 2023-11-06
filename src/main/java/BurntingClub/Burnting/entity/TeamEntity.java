@@ -19,12 +19,15 @@ public class TeamEntity {
     private String uid;
     @Column
     private String status;
+    @Column
+    private Long gender;
 
     public static TeamEntity toRoomEntity(TeamDTO teamDTO) {
         TeamEntity teammEntity = new TeamEntity();
         teammEntity.setTeam(teamDTO.getTeam());
         teammEntity.setUid(teamDTO.getUid());
         teammEntity.setStatus(teamDTO.getStatus());
+        teammEntity.setGender(teamDTO.getGender());
         return teammEntity;
     }
 }
