@@ -54,7 +54,7 @@ public class MemberController {
         return memberService.insertMember(memberDTO);
     }
     @GetMapping("/getMemberDetail")
-    public MemberDTO getMemberDetail(@RequestParam String uid) {
+    public String getMemberDetail(@RequestParam String uid) {
         return memberService.getMemberDetail(uid);
     }
     @PostMapping("/updateMember")

@@ -42,28 +42,38 @@ public class TeamService {
 
         if (!checkTeamInfo.isPresent()) {   //코드 오류
             return "방 코드를 다시 입력해주세요.";
-        } else {
+        }
+        else {
             String existingUids = checkTeamInfo.get().getUid();
             if (existingUids != null && !existingUids.isEmpty()) {   //방장이 있을 때
+
                 if (checkTeamInfo.get().getGender() != gender) { //다른 성별일 때
                     return "같은 성별만 참여할 수 있습니다.";
-                } else {  //같은 성별일 때
+                }
+                else {  //같은 성별일 때
                     existingUids += ", " + uid;
                     teamRepository.updateUidField(existingUids, team);
+
+                    TeamDTO responseDTO = new TeamDTO();
+                    responseDTO.setTeam(checkTeamInfo.get().getTeam());
+                    responseDTO.setUid(uid);
+                    responseDTO.setGender(gender);
+                    Gson gson = new Gson();
+                    return gson.toJson(responseDTO);
                 }
             } else {  //방장이 없을 때
                 Optional<MemberEntity> memberEntity = memberRepository.findByUid(uid);
                 Long CheckingGender = memberEntity.get().getSex();
                 existingUids = uid;
                 teamRepository.updateTeamField(existingUids, CheckingGender, team);
-            }
 
-            TeamDTO responseDTO = new TeamDTO();
-            responseDTO.setTeam(checkTeamInfo.get().getTeam());
-            responseDTO.setUid(uid);
-            responseDTO.setGender(gender);
-            Gson gson = new Gson();
-            return gson.toJson(responseDTO);
+                TeamDTO responseDTO = new TeamDTO();
+                responseDTO.setTeam(checkTeamInfo.get().getTeam());
+                responseDTO.setUid(uid);
+                responseDTO.setGender(CheckingGender);
+                Gson gson = new Gson();
+                return gson.toJson(responseDTO);
+            }
         }
     }
 }

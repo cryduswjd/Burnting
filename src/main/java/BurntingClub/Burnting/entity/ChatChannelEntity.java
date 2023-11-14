@@ -17,11 +17,14 @@ public class ChatChannelEntity {
     private String channel;
     @Column
     private String uid;
+    @Column
+    private String status;
 
     public static ChatChannelEntity toChatChannelEntity(ChatChannelDTO chatChannelDTO) {
         ChatChannelEntity chatChannelEntity = new ChatChannelEntity();
         chatChannelEntity.setChannel(chatChannelDTO.getChannel());
         chatChannelEntity.setUid(chatChannelDTO.getUid());
+        chatChannelEntity.setStatus(chatChannelDTO.getStatus());
         return chatChannelEntity;
     }
 }

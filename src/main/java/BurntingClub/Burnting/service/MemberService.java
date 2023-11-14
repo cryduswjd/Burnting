@@ -1,11 +1,13 @@
 package BurntingClub.Burnting.service;
 
+import BurntingClub.Burnting.dto.BasicDTO;
 import BurntingClub.Burnting.dto.MemberDTO.MemberDTO;
 import BurntingClub.Burnting.entity.ImagesEntity;
 import BurntingClub.Burnting.entity.MemberEntity;
 import BurntingClub.Burnting.repository.ImagesRepository;
 import BurntingClub.Burnting.repository.MemberRatingRepository;
 import BurntingClub.Burnting.repository.MemberRepository;
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,21 +27,25 @@ public class MemberService{
         Optional<MemberEntity> memberEntity = memberRepository.findByUid(memberDTO.getUid());
         if (memberEntity.isPresent()) {
             memberDTO = MemberDTO.toMemberDTO(memberEntity.get());
-            return memberDTO.toString();
+            Gson gson = new Gson();
+            return gson.toJson(memberDTO);
         } else {
             MemberEntity newMemberEntity = toMemberEntity(memberDTO);
             memberRepository.save(newMemberEntity);
-            return "User \"" + memberDTO.getUid() + "\" Insert Successfully";
+            Gson gson = new Gson();
+            return gson.toJson(memberDTO);
         }
     }
-    public MemberDTO getMemberDetail(String uid) {
+    public String getMemberDetail(String uid) {
         Optional<MemberEntity> memberEntity = memberRepository.findByUid(uid);
         MemberDTO memberDTO = MemberDTO.toMemberDTO(memberEntity.get());
-        return memberDTO;
+        Gson gson = new Gson();
+        return gson.toJson(memberDTO);
     }
     public String updateMember(MemberDTO memberDTO) {
         memberRepository.updateInfo(memberDTO.getNickname(), memberDTO.getPhotoUrl(), memberDTO.getAge(), memberDTO.getUniversity(), memberDTO.getMajor(), memberDTO.getInfotext(), memberDTO.getSex(), memberDTO.getUid());
-        return "User \"" + memberDTO.getUid() + "\" Update Successfully";
+        Gson gson = new Gson();
+        return gson.toJson(memberDTO);
     }
     public String deleteMember(String uid) {
         memberRatingRepository.deleteByMemberEntity_Uid(uid);

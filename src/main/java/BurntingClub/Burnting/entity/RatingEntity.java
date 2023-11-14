@@ -20,9 +20,11 @@ public class RatingEntity {
     @JoinColumn(name = "uid", referencedColumnName = "uid")
     private MemberEntity memberEntity;
     @Column
-    private String rating;
+    private Long rating;
     @Column
     private String opinion;
+    @Column
+    private Long declaration;
 
     public static RatingEntity toRatingEntity(RatingDTO ratingDTO, MemberRepository memberRepository) {
         RatingEntity ratingEntity = new RatingEntity();
@@ -30,6 +32,7 @@ public class RatingEntity {
         ratingEntity.setMemberEntity(memberEntity.get());
         ratingEntity.setRating(ratingDTO.getRating());
         ratingEntity.setOpinion(ratingDTO.getOpinion());
+        ratingEntity.setDeclaration(ratingDTO.getDeclaration());
         return ratingEntity;
     }
 }

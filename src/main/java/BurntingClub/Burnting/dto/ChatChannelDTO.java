@@ -11,11 +11,13 @@ import lombok.*;
 public class ChatChannelDTO {
     private String channel;
     private String uid;
+    private String status;
 
     public static ChatChannelDTO toChatChannelDTO(ChatChannelEntity chatChannelEntity) {
         ChatChannelDTO chatChannelDTO = new ChatChannelDTO();
         chatChannelDTO.setChannel(chatChannelEntity.getChannel());
         chatChannelDTO.setUid(chatChannelEntity.getUid());
+        chatChannelDTO.setStatus(chatChannelEntity.getStatus());
         return chatChannelDTO;
     }
 }
