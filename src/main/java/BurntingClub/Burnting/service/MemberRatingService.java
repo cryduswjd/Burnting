@@ -2,15 +2,12 @@ package BurntingClub.Burnting.service;
 
 import BurntingClub.Burnting.dto.MatchedDTO.ChannelMemberDTO;
 import BurntingClub.Burnting.dto.MatchedDTO.MatchedMemberDTO;
-import BurntingClub.Burnting.dto.RatingDTO;
-import BurntingClub.Burnting.entity.ChatChannelEntity;
-import BurntingClub.Burnting.entity.MemberEntity;
-import BurntingClub.Burnting.entity.RatingEntity;
+import BurntingClub.Burnting.entity.MatchedEntity.ChatChannelEntity;
+import BurntingClub.Burnting.entity.MemberEntity.MemberEntity;
 import BurntingClub.Burnting.repository.ChatChannelRepository;
 import BurntingClub.Burnting.repository.MemberRatingRepository;
 import BurntingClub.Burnting.repository.MemberRepository;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

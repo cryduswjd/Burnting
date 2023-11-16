@@ -13,6 +13,7 @@ public class TeamDTO {
     private String uid;
     private String status;
     private Long gender;
+    private Long university;
 
     public static TeamDTO toTeamDTO(TeamEntity teamEntity) {
         TeamDTO teamDTO = new TeamDTO();
@@ -20,6 +21,7 @@ public class TeamDTO {
         teamDTO.setUid(teamEntity.getUid());
         teamDTO.setStatus(teamEntity.getStatus());
         teamDTO.setGender(teamEntity.getGender());
+        teamDTO.setUniversity(teamEntity.getUniversity());
         return teamDTO;
     }
 }

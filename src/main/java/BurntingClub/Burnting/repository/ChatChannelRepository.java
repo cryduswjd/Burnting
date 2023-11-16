@@ -1,6 +1,6 @@
 package BurntingClub.Burnting.repository;
 
-import BurntingClub.Burnting.entity.ChatChannelEntity;
+import BurntingClub.Burnting.entity.MatchedEntity.ChatChannelEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

@@ -12,6 +12,15 @@ import java.util.List;
 public class ChannelMemberDTO {
     private String channel;
     private List<String> user;
+    private Long uinversity;
+
+    public Long getUinversity() {
+        return uinversity;
+    }
+
+    public void setUinversity(Long uinversity) {
+        this.uinversity = uinversity;
+    }
 
     public String getChannel() {
         return channel;

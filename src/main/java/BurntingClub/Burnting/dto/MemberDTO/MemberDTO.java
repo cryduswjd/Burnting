@@ -1,6 +1,6 @@
 package BurntingClub.Burnting.dto.MemberDTO;
 
-import BurntingClub.Burnting.entity.MemberEntity;
+import BurntingClub.Burnting.entity.MemberEntity.MemberEntity;
 import lombok.*;
 
 @Getter
@@ -20,6 +20,14 @@ public class MemberDTO {
     private String infotext;
     private Long sex;
 
+    public String getUniversity() {
+        return university;
+    }
+
+    public void setUniversity(String university) {
+        this.university = university;
+    }
+
     public static MemberDTO toMemberDTO(MemberEntity memberEntity) {
         MemberDTO memberDTO = new MemberDTO();
         memberDTO.setUid(memberEntity.getUid());
@@ -28,7 +36,6 @@ public class MemberDTO {
         memberDTO.setPhotoUrl(memberEntity.getPhotoUrl());
         memberDTO.setNickname(memberEntity.getNickname());
         memberDTO.setAge(memberEntity.getAge());
-        memberDTO.setUniversity(memberEntity.getUniversity());
         memberDTO.setMajor(memberEntity.getMajor());
         memberDTO.setInfotext(memberEntity.getInfotext());
         memberDTO.setSex(memberEntity.getSex());

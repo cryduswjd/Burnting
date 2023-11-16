@@ -1,6 +1,7 @@
 package BurntingClub.Burnting.entity;
 
 import BurntingClub.Burnting.dto.RatingDTO;
+import BurntingClub.Burnting.entity.MemberEntity.MemberEntity;
 import BurntingClub.Burnting.repository.MemberRepository;
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -19,6 +19,15 @@ public class RoomGroupDTO {
     private List<String> userIds;
     private Map<String, Object> userRoles;
     private String status;
+    private Long university;
+
+    public Long getUniversity() {
+        return university;
+    }
+
+    public void setUniversity(Long university) {
+        this.university = university;
+    }
 
     public String getStatus() {
         return status;

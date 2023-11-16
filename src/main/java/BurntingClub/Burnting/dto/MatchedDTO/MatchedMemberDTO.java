@@ -1,6 +1,5 @@
 package BurntingClub.Burnting.dto.MatchedDTO;
 
-import BurntingClub.Burnting.dto.ChatChannelDTO;
 import lombok.*;
 
 @Getter

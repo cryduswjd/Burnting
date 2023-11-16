@@ -21,6 +21,8 @@ public class TeamEntity {
     private String status;
     @Column
     private Long gender;
+    @Column
+    private Long university;
 
     public static TeamEntity toRoomEntity(TeamDTO teamDTO) {
         TeamEntity teammEntity = new TeamEntity();
@@ -28,6 +30,7 @@ public class TeamEntity {
         teammEntity.setUid(teamDTO.getUid());
         teammEntity.setStatus(teamDTO.getStatus());
         teammEntity.setGender(teamDTO.getGender());
+        teammEntity.setUniversity(teamDTO.getUniversity());
         return teammEntity;
     }
 }

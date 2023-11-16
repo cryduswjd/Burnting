@@ -1,26 +1,28 @@
 package BurntingClub.Burnting.service;
 
-import BurntingClub.Burnting.dto.BasicDTO;
 import BurntingClub.Burnting.dto.MemberDTO.MemberDTO;
-import BurntingClub.Burnting.entity.ImagesEntity;
-import BurntingClub.Burnting.entity.MemberEntity;
+import BurntingClub.Burnting.dto.UniversityListDTO;
+import BurntingClub.Burnting.entity.MemberEntity.ImagesEntity;
+import BurntingClub.Burnting.entity.MemberEntity.MemberEntity;
+import BurntingClub.Burnting.entity.UniversityEntity;
 import BurntingClub.Burnting.repository.ImagesRepository;
 import BurntingClub.Burnting.repository.MemberRatingRepository;
 import BurntingClub.Burnting.repository.MemberRepository;
+import BurntingClub.Burnting.repository.UniversityRepository;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static BurntingClub.Burnting.entity.MemberEntity.toMemberEntity;
+import static BurntingClub.Burnting.entity.MemberEntity.MemberEntity.toMemberEntity;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService{
     public final MemberRepository memberRepository;
+    public final UniversityRepository universityRepository;
     public final MemberRatingRepository memberRatingRepository;
     public final ImagesRepository imagesRepository;
     public String insertMember(MemberDTO memberDTO) {
@@ -38,14 +40,25 @@ public class MemberService{
     }
     public String getMemberDetail(String uid) {
         Optional<MemberEntity> memberEntity = memberRepository.findByUid(uid);
+
         MemberDTO memberDTO = MemberDTO.toMemberDTO(memberEntity.get());
+        Long universityCode = memberEntity.get().getUniversity_code();
+
+        Optional<UniversityEntity> universityEntity = universityRepository.findByNum(universityCode);
+        memberDTO.setUniversity(universityEntity.get().getUniversity());
+
         Gson gson = new Gson();
         return gson.toJson(memberDTO);
     }
-    public String updateMember(MemberDTO memberDTO) {
-        memberRepository.updateInfo(memberDTO.getNickname(), memberDTO.getPhotoUrl(), memberDTO.getAge(), memberDTO.getUniversity(), memberDTO.getMajor(), memberDTO.getInfotext(), memberDTO.getSex(), memberDTO.getUid());
+    public String updateMember(MemberEntity memberEntity) {
+        memberRepository.updateInfo(memberEntity.getNickname(), memberEntity.getPhotoUrl(), memberEntity.getAge(), memberEntity.getUniversity_code(), memberEntity.getMajor(), memberEntity.getInfotext(), memberEntity.getSex(), memberEntity.getUid());
         Gson gson = new Gson();
-        return gson.toJson(memberDTO);
+        return gson.toJson(memberEntity);
+    }
+    public String selectUniversity() {
+        Iterable<UniversityListDTO> universityListDTO = universityRepository.findByNumAndUniversity();
+        Gson gson = new Gson();
+        return gson.toJson(universityListDTO);
     }
     public String deleteMember(String uid) {
         memberRatingRepository.deleteByMemberEntity_Uid(uid);
@@ -76,5 +89,11 @@ public class MemberService{
         String jsonString = "{\"images\":" + jsonArray + "}";
 
         return jsonString;
+    }
+
+    public String universityList() {
+        Iterable<UniversityListDTO> universityEntitie = universityRepository.findByNumAndUniversity();
+        Gson gson = new Gson();
+        return gson.toJson(universityEntitie);
     }
 }

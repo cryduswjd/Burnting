@@ -1,6 +1,5 @@
 package BurntingClub.Burnting.repository;
 
-import BurntingClub.Burnting.entity.MemberEntity;
 import BurntingClub.Burnting.entity.RatingEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;

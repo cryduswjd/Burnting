@@ -2,6 +2,8 @@ package BurntingClub.Burnting.controller;
 
 import BurntingClub.Burnting.dto.MemberDTO.MemberDTO;
 import BurntingClub.Burnting.dto.MemberDTO.TokenDTO;
+import BurntingClub.Burnting.dto.UniversityDTO;
+import BurntingClub.Burnting.entity.MemberEntity.MemberEntity;
 import BurntingClub.Burnting.service.MemberService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -58,8 +60,12 @@ public class MemberController {
         return memberService.getMemberDetail(uid);
     }
     @PostMapping("/updateMember")
-    public String updateMember(@RequestBody MemberDTO memberDTO) {
-        return memberService.updateMember(memberDTO);
+    public String updateMember(@RequestBody MemberEntity memberEntity) {
+        return memberService.updateMember(memberEntity);
+    }
+    @GetMapping("/selectUniversity")
+    public String selectUniversity() {
+        return memberService.selectUniversity();
     }
     @PostMapping("/deleteMember")
     public String deleteMember(@RequestParam String uid) {

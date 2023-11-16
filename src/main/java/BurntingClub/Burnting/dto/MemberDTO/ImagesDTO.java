@@ -1,9 +1,6 @@
 package BurntingClub.Burnting.dto.MemberDTO;
 
-import BurntingClub.Burnting.entity.ImagesEntity;
 import lombok.*;
-
-import java.util.List;
 
 @Getter
 @Setter

@@ -18,8 +18,8 @@ public interface TeamRepository extends JpaRepository<TeamEntity, Long> {
     void updateUidField(@Param(value = "uid") String uid, @Param(value = "team") String team);
     @Modifying(clearAutomatically = true)
     @Transactional
-    @Query(value = "update TeamEntity t set t.uid = :uid, t.gender = :gender where t.team = :team")
-    void updateTeamField(@Param(value = "uid") String uid, @Param(value = "gender") Long gender, @Param(value = "team") String team);
+    @Query(value = "update TeamEntity t set t.uid = :uid, t.gender = :gender, t.university = :university where t.team = :team")
+    void updateTeamField(@Param(value = "uid") String uid, @Param(value = "gender") Long gender, @Param(value = "team") String team, @Param(value = "university") Long university);
     @Modifying(clearAutomatically = true)
     @Transactional
     @Query(value = "update TeamEntity t set t.status = :status where t.team = :team")

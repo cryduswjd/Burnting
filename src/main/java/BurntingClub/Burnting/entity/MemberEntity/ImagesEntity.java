@@ -1,11 +1,8 @@
-package BurntingClub.Burnting.entity;
+package BurntingClub.Burnting.entity.MemberEntity;
 
-import BurntingClub.Burnting.dto.MemberDTO.ImagesDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter
 @Setter

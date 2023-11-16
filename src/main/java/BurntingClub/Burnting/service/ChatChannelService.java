@@ -2,25 +2,27 @@ package BurntingClub.Burnting.service;
 
 import BurntingClub.Burnting.config.RandomCode;
 import BurntingClub.Burnting.dto.BasicDTO;
-import BurntingClub.Burnting.dto.ChatChannelDTO;
-import BurntingClub.Burnting.dto.MatchedDTO.ChannelMemberDTO;
-import BurntingClub.Burnting.dto.MatchedDTO.MatchedMemberDTO;
-import BurntingClub.Burnting.dto.MatchedDTO.RoomGroupDTO;
-import BurntingClub.Burnting.dto.TeamDTO;
-import BurntingClub.Burnting.entity.ChatChannelEntity;
-import BurntingClub.Burnting.entity.MemberEntity;
+import BurntingClub.Burnting.dto.MatchedDTO.*;
+import BurntingClub.Burnting.entity.MatchedEntity.ChatChannelEntity;
+import BurntingClub.Burnting.entity.MatchedEntity.PlaceVoteEntity;
+import BurntingClub.Burnting.entity.MemberEntity.MemberEntity;
 import BurntingClub.Burnting.entity.TeamEntity;
-import BurntingClub.Burnting.repository.ChatChannelRepository;
-import BurntingClub.Burnting.repository.MemberRepository;
-import BurntingClub.Burnting.repository.TeamRepository;
+import BurntingClub.Burnting.entity.UniversityEntity;
+import BurntingClub.Burnting.repository.*;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -33,16 +35,24 @@ public class ChatChannelService {
     public final ChatChannelRepository chatChannelRepository;
     public final TeamRepository teamRepository;
     public final MemberRepository memberRepository;
+    public final UniversityRepository universityRepository;
+    public final RestTemplate restTemplate;
+    public final PlaceVoteRepository placeVoteRepository;
+
+    @Value("${kakao.api.key}")
+    private String kakaoApiKey;
     private String chatChannelCode = "";
     private final Lock lock = new ReentrantLock();
     @Scheduled(fixedDelay = 600000)
     public String statusReady(String team) {
         try {
             teamRepository.updateTeamStatusField("ready", team);
+            Optional<TeamEntity> teamEntity = teamRepository.findByTeam(team);
 
             Firestore firestore = FirestoreClient.getFirestore();
             DocumentReference documentReference = firestore.collection("teams").document(team);
             documentReference.set(Map.of("status", "ready"), SetOptions.merge());
+            documentReference.set(Map.of("university", teamEntity.get().getUniversity()), SetOptions.merge());
 
             Optional<TeamEntity> uidOfTeam = teamRepository.findByTeam(team);
             Long numberOfUid = Arrays.stream(uidOfTeam.get().getUid().split(", ")).count();
@@ -75,6 +85,7 @@ public class ChatChannelService {
                         userInfo.add(jsonMember.toString().replace("\\", ""));
                     }
                     channelMemberDTO.setUser(userInfo);
+                    channelMemberDTO.setUinversity(teamEntity.get().getUniversity());
                 }
             }
 
@@ -90,6 +101,8 @@ public class ChatChannelService {
     }
     private boolean findAndMatchOtherTeam(String team, Long numberOfUid) {
         String teamA = teamRepository.findByTeam(team).get().getUid();
+        Long mainUniversity = teamRepository.findByTeam(team).get().getUniversity();
+
         // 같은 유저 수의 다른 팀 가져오기
         List<TeamEntity> readyTeam = teamRepository.findByStatus("ready");
 
@@ -99,10 +112,11 @@ public class ChatChannelService {
             if(!Objects.equals(original.get().getTeam(), teamEntity.getTeam())) {   //매칭 신청한 팀 제외
                 String readyTeamUid = teamEntity.getUid();
                 String[] uids = readyTeamUid.split(", ");
-                int OtherTeamNumberOfUids = uids.length;
+                int OtherTeamNumberOfUids = uids.length;    //매칭될 팀 인원
+                Long OtherTeamUniversity = teamEntity.getUniversity();
 
-                //팀 인원이 맞고 성별이 다른 경우 team table status -> matched / chatChannel insert
-                if(OtherTeamNumberOfUids == numberOfUid && !Objects.equals(teamEntity.getGender(), original.get().getGender())) {
+                //팀 인원/학교가 맞고 성별이 다른 경우 team table status -> matched / chatChannel insert
+                if(OtherTeamNumberOfUids == numberOfUid && Objects.equals(mainUniversity, OtherTeamUniversity) && !Objects.equals(teamEntity.getGender(), original.get().getGender())) {
 
                     RandomCode randomCode = new RandomCode();
                     chatChannelCode = randomCode.generateRandomStrAndAssert();
@@ -120,7 +134,7 @@ public class ChatChannelService {
                     }
 
                     Firestore firestore = FirestoreClient.getFirestore();
-                    RoomGroupDTO roomGroupDTO = new RoomGroupDTO(null, null, chatChannelCode, "group", userIds, userRoles, "running");
+                    RoomGroupDTO roomGroupDTO = new RoomGroupDTO(null, null, chatChannelCode, "group", userIds, userRoles, "running", mainUniversity);
                     DocumentReference documentReference = firestore.collection("rooms").document(chatChannelCode);
                     documentReference.set(roomGroupDTO);
 
@@ -135,15 +149,15 @@ public class ChatChannelService {
                     updates.put("roomId", chatChannelCode);
                     updates.put("status", "matched");
 
-                    ApiFuture<WriteResult> writeResultA = docRefA.update(updates);
-                    ApiFuture<WriteResult> writeResultB = docRefB.update(updates);
+                    docRefA.update(updates);
+                    docRefB.update(updates);
 
                     //chatChannel insert
                     ChatChannelDTO chatChannelDTO;
                     while (true) {
                         Optional<ChatChannelEntity> checkChannel = chatChannelRepository.findByChannel(chatChannelCode);
                         if (!checkChannel.isPresent()) {
-                            chatChannelDTO = new ChatChannelDTO(chatChannelCode, teamA + ", " + teamB, "runnig");
+                            chatChannelDTO = new ChatChannelDTO(chatChannelCode, teamA + ", " + teamB, "running", mainUniversity);
                             ChatChannelEntity chatChannelEntity = ChatChannelEntity.toChatChannelEntity(chatChannelDTO);
                             chatChannelRepository.save(chatChannelEntity);
                             break;
@@ -155,10 +169,6 @@ public class ChatChannelService {
         }
         return false;
     }
-    private String handleMatchingFailure(String team) {
-        return team + " is match Failed";
-    }
-
     public String statusDeath(String chatChannelCode) throws ExecutionException, InterruptedException {
         Firestore firestore = FirestoreClient.getFirestore();
 
@@ -179,12 +189,111 @@ public class ChatChannelService {
         DocumentReference documentReference = firestore.collection("rooms").document(chatChannelCode);
         Map<String, Object> updates = new HashMap<>();
         updates.put("status", "death");
-        ApiFuture<WriteResult> writeResultA = documentReference.update(updates);
+        documentReference.update(updates);
         chatChannelRepository.updateChannelStatusField("death", chatChannelCode);
 
         BasicDTO responseDTO = new BasicDTO();
         responseDTO.setMessage(chatChannelCode + "status Death");
         Gson gson = new Gson();
         return gson.toJson(responseDTO);
+    }
+    public String foodList(Long universityCode) {
+        Optional<UniversityEntity> universityEntity = universityRepository.findByNum(universityCode);
+        String lng = universityEntity.get().getLng();
+        String lat = universityEntity.get().getLat();
+
+        String apiUrl = "https://dapi.kakao.com/v2/local/search/category.json?category_group_code=FD6&x=" + lng + "&y=" + lat + "&radius=500";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "KakaoAK " + kakaoApiKey);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.POST, requestEntity, String.class);
+
+        return responseEntity.getBody();
+    }
+    public String cafeList(Long universityCode) {
+        Optional<UniversityEntity> universityEntity = universityRepository.findByNum(universityCode);
+        String lng = universityEntity.get().getLng();
+        String lat = universityEntity.get().getLat();
+
+        String apiUrl = "https://dapi.kakao.com/v2/local/search/category.json?category_group_code=CE7&x=" + lng + "&y=" + lat + "&radius=500";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "KakaoAK " + kakaoApiKey);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.POST, requestEntity, String.class);
+
+        return responseEntity.getBody();
+    }
+
+    public String placeVote(String chatChannelCode, String uid, String placeUrl) {
+        Optional<ChatChannelEntity> chatChannelEntity = chatChannelRepository.findByChannel(chatChannelCode);
+
+        if("running".equals(chatChannelEntity.get().getStatus())) {
+            PlaceVoteDTO placeVoteDTO = new PlaceVoteDTO(chatChannelCode, uid, placeUrl);
+            PlaceVoteEntity placeVoteEntity = PlaceVoteEntity.toPlaceVoteEntity(placeVoteDTO);
+            placeVoteRepository.save(placeVoteEntity);
+
+            Long totalNumber = Arrays.stream(chatChannelRepository.findByChannel(chatChannelCode).get().getUid().split(", ")).count();
+            Long nowNumber = placeVoteRepository.countByChannel(chatChannelCode);
+
+            //전체 투표가 진행중일 때
+            if(!nowNumber.equals(totalNumber)) {
+                VotingDTO votingDTO = new VotingDTO();
+                votingDTO.setChatChannelCode(chatChannelCode);
+                votingDTO.setUid(uid);
+                votingDTO.setPlaceUrl(placeUrl);
+                votingDTO.setTotalNumber(totalNumber);
+                votingDTO.setNowNumber(nowNumber);
+                Gson gson = new Gson();
+                return gson.toJson(votingDTO);
+            }
+            //전체 투표가 마감됬을 때
+            else {
+                List<PlaceVoteEntity> result = placeVoteRepository.findByChannel(chatChannelCode);
+                Map<String, Long> dataTotal = new HashMap<>();
+
+                for (PlaceVoteEntity index : result) {
+                    String placeUrlVote = index.getPlace_url();
+                    dataTotal.merge(placeUrlVote, 1L, Long::sum);
+                }
+
+                Optional<Map.Entry<String, Long>> maxEntry = dataTotal.entrySet().stream().max(Map.Entry.comparingByValue());
+
+                if (maxEntry.isPresent()) {
+                    long maxVotes = maxEntry.get().getValue();
+                    boolean hasMultipleMaxEntries = dataTotal.values().stream().filter(value -> value == maxVotes).count() > 1;
+
+                    if (hasMultipleMaxEntries) {
+                        BasicDTO basicDTO = new BasicDTO();
+                        basicDTO.setMessage("다시 투표해주세요. 동점이 발생했습니다.");
+                        Gson gson = new Gson();
+                        return gson.toJson(basicDTO);
+                    }
+                    else {
+                        VotingDTO votingDTO = new VotingDTO();
+                        votingDTO.setChatChannelCode(chatChannelCode);
+                        votingDTO.setPlaceUrl(maxEntry.get().getKey());
+                        votingDTO.setNowNumber(maxEntry.get().getValue()+1);
+                        Gson gson = new Gson();
+                        return gson.toJson(votingDTO);
+                    }
+                }
+                else {
+                    BasicDTO basicDTO = new BasicDTO();
+                    basicDTO.setMessage("투표 결과가 없습니다.");
+                    Gson gson = new Gson();
+                    return gson.toJson(basicDTO);
+                }
+            }
+        }
+        else {
+            BasicDTO basicDTO = new BasicDTO();
+            basicDTO.setMessage("활성화된 채팅방이 아닙니다.");
+            Gson gson = new Gson();
+            return gson.toJson(basicDTO);
+        }
     }
 }

@@ -16,3 +16,7 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+
+kakao:
+  api:
+    key: 91621a085890396f18fe1d7c4d977a7c

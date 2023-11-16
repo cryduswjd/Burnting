@@ -1,4 +1,4 @@
-package BurntingClub.Burnting.entity;
+package BurntingClub.Burnting.entity.MemberEntity;
 
 import BurntingClub.Burnting.dto.MemberDTO.MemberDTO;
 import jakarta.persistence.*;
@@ -25,7 +25,7 @@ public class MemberEntity {
     @Column
     private String age;
     @Column
-    private String university;
+    private Long university_code;
     @Column
     private String major;
     @Column
@@ -41,7 +41,6 @@ public class MemberEntity {
         memberEntity.setPhotoUrl(memberDTO.getPhotoUrl());
         memberEntity.setNickname(memberDTO.getNickname());
         memberEntity.setAge(memberDTO.getAge());
-        memberEntity.setUniversity(memberDTO.getUniversity());
         memberEntity.setMajor(memberDTO.getMajor());
         memberEntity.setInfotext(memberDTO.getInfotext());
         memberEntity.setSex(memberDTO.getSex());
