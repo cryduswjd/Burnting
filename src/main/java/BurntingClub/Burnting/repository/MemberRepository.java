@@ -1,5 +1,6 @@
 package BurntingClub.Burnting.repository;
 
+import BurntingClub.Burnting.dto.MemberDTO.MemberDTO;
 import BurntingClub.Burnting.entity.MemberEntity.MemberEntity;
 import BurntingClub.Burnting.entity.UniversityEntity;
 import jakarta.transaction.Transactional;
@@ -12,6 +13,8 @@ import java.util.Optional;
 
 public interface MemberRepository extends CrudRepository<MemberEntity, Long> {
     Optional<MemberEntity> findByUid(String uid);
+    @Query(value = "select new BurntingClub.Burnting.dto.MemberDTO.MemberDTO(m.uid, m.email, m.displayName, m.photoUrl, m.nickname, m.age, u.university, m.major, m.infotext, m.sex) from MemberEntity m left outer join UniversityEntity u on m.university_code = u.num where m.uid = :uid")
+    Optional<MemberDTO> getUidInfo(@Param(value = "uid") String uid);
     @Transactional
     Optional<MemberEntity> deleteByUid(String uid);
     @Modifying(clearAutomatically = true)

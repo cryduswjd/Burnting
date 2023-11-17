@@ -33,6 +33,14 @@ public class MemberEntity {
     @Column
     private Long sex;
 
+    public Long getUniversity_code() {
+        return university_code;
+    }
+
+    public void setUniversity_code(Long university_code) {
+        this.university_code = university_code;
+    }
+
     public static MemberEntity toMemberEntity(MemberDTO memberDTO) {
         MemberEntity memberEntity = new MemberEntity();
         memberEntity.setEmail(memberDTO.getEmail());
