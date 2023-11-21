@@ -29,48 +29,59 @@ public class MemberService{
     public final ImagesRepository imagesRepository;
     public String insertMember(MemberDTO memberDTO) {
         Optional<MemberEntity> memberEntity = memberRepository.findByUid(memberDTO.getUid());
+        Gson gson = new GsonBuilder().serializeNulls().create();
 
         if (memberEntity.isPresent()) {
-            Optional<MemberDTO> getUserInfo = memberRepository.getUidInfo(memberDTO.getUid());
-
-            Gson gson = new GsonBuilder().serializeNulls().create();
-
             MemberDTO result = new MemberDTO();
-            result.setUid(getUserInfo.get().getUid());
-            result.setEmail(getUserInfo.get().getEmail());
-            result.setDisplayName(getUserInfo.get().getDisplayName());
-            result.setPhotoUrl(getUserInfo.get().getPhotoUrl());
-            result.setNickname(getUserInfo.get().getNickname());
-            result.setUniversity(getUserInfo.get().getUniversity());
-            result.setMajor(getUserInfo.get().getMajor());
-            result.setInfotext(getUserInfo.get().getInfotext());
-            result.setSex(getUserInfo.get().getSex());
-
+            Optional<UniversityEntity> universityEntity = universityRepository.findByNum(memberEntity.get().getUniversity_code());
+            result.setUid(memberEntity.get().getUid());
+            result.setEmail(memberEntity.get().getEmail());
+            result.setDisplayName(memberEntity.get().getDisplayName());
+            result.setPhotoUrl(memberEntity.get().getPhotoUrl());
+            result.setNickname(memberEntity.get().getNickname());
+            result.setMajor(memberEntity.get().getMajor());
+            result.setInfotext(memberEntity.get().getInfotext());
+            result.setSex(memberEntity.get().getSex());
+            //학교 설정이 안되어있다면
+            if (memberEntity.get().getUniversity_code() == null) {
+                result.setUniversity(null);
+                result.setUniversityCode(null);
+            } else {
+                result.setUniversity(universityEntity.get().getUniversity());
+                result.setUniversityCode(memberEntity.get().getUniversity_code());
+            }
             return gson.toJson(result);
-        } else {
+        }
+        else {
             MemberEntity newMemberEntity = toMemberEntity(memberDTO);
             memberRepository.save(newMemberEntity);
-            Gson gson = new Gson();
             return gson.toJson(memberDTO);
         }
     }
     public String getMemberDetail(String uid) {
-        Optional<MemberDTO> memberDTO = memberRepository.getUidInfo(uid);
-
+        Optional<MemberEntity> memberEntity = memberRepository.findByUid(uid);
         Gson gson = new GsonBuilder().serializeNulls().create();
 
-        if (!memberDTO.get().getUid().isEmpty()) {
+        if (!memberEntity.get().getUid().isEmpty()) {
             MemberDTO result = new MemberDTO();
-            result.setUid(memberDTO.get().getUid());
-            result.setEmail(memberDTO.get().getEmail());
-            result.setDisplayName(memberDTO.get().getDisplayName());
-            result.setPhotoUrl(memberDTO.get().getPhotoUrl());
-            result.setNickname(memberDTO.get().getNickname());
-            result.setUniversity(memberDTO.get().getUniversity());
-            result.setMajor(memberDTO.get().getMajor());
-            result.setInfotext(memberDTO.get().getInfotext());
-            result.setSex(memberDTO.get().getSex());
-
+            Optional<UniversityEntity> universityEntity = universityRepository.findByNum(memberEntity.get().getUniversity_code());
+            result.setUid(memberEntity.get().getUid());
+            result.setEmail(memberEntity.get().getEmail());
+            result.setDisplayName(memberEntity.get().getDisplayName());
+            result.setPhotoUrl(memberEntity.get().getPhotoUrl());
+            result.setNickname(memberEntity.get().getNickname());
+            result.setMajor(memberEntity.get().getMajor());
+            result.setInfotext(memberEntity.get().getInfotext());
+            result.setSex(memberEntity.get().getSex());
+            //학교 설정이 안되어있다면
+            if(memberEntity.get().getUniversity_code() == null) {
+                result.setUniversity(null);
+                result.setUniversityCode(null);
+            }
+            else {
+                result.setUniversity(universityEntity.get().getUniversity());
+                result.setUniversityCode(memberEntity.get().getUniversity_code());
+            }
             return gson.toJson(result);
         }
         else {
@@ -90,7 +101,7 @@ public class MemberService{
         return gson.toJson(universityListDTO);
     }
     public String deleteMember(String uid) {
-        memberRatingRepository.deleteByMemberEntity_Uid(uid);
+        memberRatingRepository.deleteByUid(uid);
         memberRepository.deleteByUid(uid);
         return "User \"" + uid + "\" Delete Successfully";
     }

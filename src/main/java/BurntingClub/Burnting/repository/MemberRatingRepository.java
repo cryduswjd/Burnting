@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface MemberRatingRepository extends JpaRepository<RatingEntity, Long> {
     @Transactional
-    Optional<RatingEntity> deleteByMemberEntity_Uid(String uid);
+    Optional<RatingEntity> deleteByUid(String uid);
 }

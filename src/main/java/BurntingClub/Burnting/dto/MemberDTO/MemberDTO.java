@@ -16,9 +16,18 @@ public class MemberDTO {
     private String nickname;
     private String age;
     private String university;
+    private Long universityCode;
     private String major;
     private String infotext;
     private Long sex;
+
+    public Long getUniversityCode() {
+        return universityCode;
+    }
+
+    public void setUniversityCode(Long universityCode) {
+        this.universityCode = universityCode;
+    }
 
     public String getUid() {
         return uid;
@@ -98,19 +107,5 @@ public class MemberDTO {
 
     public void setSex(Long sex) {
         this.sex = sex;
-    }
-
-    public static MemberDTO toMemberDTO(MemberEntity memberEntity) {
-        MemberDTO memberDTO = new MemberDTO();
-        memberDTO.setUid(memberEntity.getUid());
-        memberDTO.setEmail(memberEntity.getEmail());
-        memberDTO.setDisplayName(memberEntity.getDisplayName());
-        memberDTO.setPhotoUrl(memberEntity.getPhotoUrl());
-        memberDTO.setNickname(memberEntity.getNickname());
-        memberDTO.setAge(memberEntity.getAge());
-        memberDTO.setMajor(memberEntity.getMajor());
-        memberDTO.setInfotext(memberEntity.getInfotext());
-        memberDTO.setSex(memberEntity.getSex());
-        return memberDTO;
     }
 }

@@ -11,4 +11,5 @@ public interface UniversityRepository extends CrudRepository<UniversityEntity, L
     @Query("SELECT new BurntingClub.Burnting.dto.UniversityListDTO(u.num, u.university) FROM UniversityEntity u")
     Iterable<UniversityListDTO> findByNumAndUniversity();
     Optional<UniversityEntity> findByNum(Long universityCode);
+    Optional<UniversityEntity> findByUniversity(String university);
 }

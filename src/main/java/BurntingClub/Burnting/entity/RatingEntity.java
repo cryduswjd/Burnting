@@ -17,9 +17,10 @@ public class RatingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long num;
-    @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "uid", referencedColumnName = "uid")
-    private MemberEntity memberEntity;
+    @Column
+    private String uid;
+    @Column
+    private String channel;
     @Column
     private Long rating;
     @Column
@@ -27,10 +28,10 @@ public class RatingEntity {
     @Column
     private Long declaration;
 
-    public static RatingEntity toRatingEntity(RatingDTO ratingDTO, MemberRepository memberRepository) {
+    public static RatingEntity toRatingEntity(RatingDTO ratingDTO) {
         RatingEntity ratingEntity = new RatingEntity();
-        Optional<MemberEntity> memberEntity = memberRepository.findByUid(ratingDTO.getUid());
-        ratingEntity.setMemberEntity(memberEntity.get());
+        ratingEntity.setUid(ratingDTO.getUid());
+        ratingEntity.setChannel(ratingDTO.getChannel());
         ratingEntity.setRating(ratingDTO.getRating());
         ratingEntity.setOpinion(ratingDTO.getOpinion());
         ratingEntity.setDeclaration(ratingDTO.getDeclaration());

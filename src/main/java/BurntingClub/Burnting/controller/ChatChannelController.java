@@ -3,6 +3,7 @@ package BurntingClub.Burnting.controller;
 import BurntingClub.Burnting.dto.MatchedDTO.PlaceVoteDTO;
 import BurntingClub.Burnting.service.ChatChannelService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,5 +33,5 @@ public class ChatChannelController {
     @PostMapping("/placeVote")
     public String placeVote(@RequestParam String chatChannelCode, @RequestParam String uid, @RequestParam String placeUrl) {
         return chatChannelService.placeVote(chatChannelCode, uid, placeUrl);
-    }
+    }   //미팅 장소 투표
 }
